@@ -90,13 +90,15 @@ void part1( )
 
 }
 
+///Computes the Multivariable regression of matrix a, matrix b, and the dependent matrix. 
+///Requires input of the size of the matricies as an int
 void MultiVariableRegression( matrix a, matrix b, matrix dependent, int size )
 {
 	matrix In = matrix( size, 3 );
 
 	matrix PIn;
-	matrix y( 25 ), p, x;
-	double CoD, sqrootofCoD, temp;
+	matrix p, x;
+	double CoD, sqrootofCoD, CC, temp;
 
 	//create matrix In from Row 3, Row 4, and a lot of 1's.
 	for ( int k = 0; k < size; k++ )
@@ -106,35 +108,29 @@ void MultiVariableRegression( matrix a, matrix b, matrix dependent, int size )
 		In( k, 2 ) = 1.0; //set all of last column to 1's
 	}
 
-
 	PIn = MatrixPseudoInverse( In );
 	if ( PIn.isValid( ) )
 	{
-		// Multiply pseudo inverse and y data and check for valid operation.
 		// compute the pseudo inverse and check for valid operation.
-		PIn = MatrixPseudoInverse( In );
-		if ( PIn.isValid( ) )
+		// Multiply pseudo inverse and dependent (row5), and check for valid operation.
+		p = PIn * dependent;
+		if ( p.isValid( ) )
 		{
-			// Multiply pseudo inverse and y data and check for valid operation.
-			p = PIn * y;
-			if ( p.isValid( ) )
+			//prints p
+			PrintMatrix( p );
+			
+			x = In * p; //x matrix is the product of In and p
+			if ( x.isValid( ) )
 			{
-				// Print out the parameters.
-				printf( "Parameters \n" );
-				printf( "p[0] = %lg\n", p( 0 ) );
-				printf( "p[1] = %lg\n", p( 1 ) );
-				printf( "p[2] = %lg\n", p( 2 ) );
-				// Compute fitted curve and test for valid results.
-				x = In * p;
-				if ( x.isValid( ) )
-				{
-					CoD = CoefficientOfDetermination( x, y );
-					sqrootofCoD = sqrt( CoD );
-					printf( "\nSquare root of Correlation of Determination = %lg\n", sqrootofCoD );
-
-				}// end of valid x = MtrxVector check
-			} // end of valid p = MtrxVector check.
-		}
+				CoD = CoefficientOfDetermination( x, dependent );
+				sqrootofCoD = sqrt( CoD );
+				CC = CorrelationCoefficient( x, dependent );
+				printf( "Correlation of Determination (CoD) = %lg\n", CoD );
+				printf( "Sqrt of CoD = %lg\n", sqrootofCoD );
+				printf( "Correlation Coefficient (CC) = %lg\n", CC );
+				
+			}// end of valid x = MtrxVector check
+		} // end of valid p = MtrxVector check.
 	}
 }
 
