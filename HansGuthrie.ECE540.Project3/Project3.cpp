@@ -4,6 +4,7 @@
 #include "Stats_Support.h"
 #include "MatrixOutputs.hpp"
 #include <vector>
+#include "Project3.h"
 
 #ifdef _MSC_VER
 #define _CRT_SECURE_NO_WARNINGS
@@ -15,6 +16,8 @@ void part1( )
 	matrix row1, row2, row3, row4, row5; //separate matricies for each row
 	matrix FaultTol1, FaultTol2, FaultTol3, FaultTol4;
 	double CorrelCoeff1, CorrelCoeff2, CorrelCoeff3, CorrelCoeff4;
+
+	//1a)
 
 	InputMatrix = ReadBinaryMatrix( "StatsData.mtx" ); //read in the matrix from file
 	//calculate the boundaries for the matricies so we don't have to calculate it multiple times
@@ -49,7 +52,7 @@ void part1( )
 	{
 		row5( i ) = InputMatrix( 4, i );
 	}
-	
+
 	//Compute Linear Regression parameters (FaultTol)
 	FaultTol1 = FaultTolerantRegression( row1, row5 );
 	FaultTol2 = FaultTolerantRegression( row2, row5 );
@@ -80,10 +83,64 @@ void part1( )
 	printf( "CC3: %lg \n", CorrelCoeff3 );
 	printf( "CC4: %lg \n", CorrelCoeff4 );
 
+	//1b)
+	MultiVariableRegression( row3, row4, row5, row2.high( ) );
+
+	//Row 3 and Row 4 have the highest CC, so perform a multivariable regression on them
+
+}
+
+void MultiVariableRegression( matrix a, matrix b, matrix dependent, int size )
+{
+	matrix In = matrix( size, 3 );
+
+	matrix PIn;
+	matrix y( 25 ), p, x;
+	double CoD, sqrootofCoD, temp;
+
+	//create matrix In from Row 3, Row 4, and a lot of 1's.
+	for ( int k = 0; k < size; k++ )
+	{
+		In( k, 0 ) = a( k ); // row 3
+		In( k, 1 ) = b( k ); //row 4
+		In( k, 2 ) = 1.0; //set all of last column to 1's
+	}
+
+
+	PIn = MatrixPseudoInverse( In );
+	if ( PIn.isValid( ) )
+	{
+		// Multiply pseudo inverse and y data and check for valid operation.
+		// compute the pseudo inverse and check for valid operation.
+		PIn = MatrixPseudoInverse( In );
+		if ( PIn.isValid( ) )
+		{
+			// Multiply pseudo inverse and y data and check for valid operation.
+			p = PIn * y;
+			if ( p.isValid( ) )
+			{
+				// Print out the parameters.
+				printf( "Parameters \n" );
+				printf( "p[0] = %lg\n", p( 0 ) );
+				printf( "p[1] = %lg\n", p( 1 ) );
+				printf( "p[2] = %lg\n", p( 2 ) );
+				// Compute fitted curve and test for valid results.
+				x = In * p;
+				if ( x.isValid( ) )
+				{
+					CoD = CoefficientOfDetermination( x, y );
+					sqrootofCoD = sqrt( CoD );
+					printf( "\nSquare root of Correlation of Determination = %lg\n", sqrootofCoD );
+
+				}// end of valid x = MtrxVector check
+			} // end of valid p = MtrxVector check.
+		}
+	}
 }
 
 void main( )
 {
-	part1( ); 
+	part1( );
 	getchar( );
+
 }

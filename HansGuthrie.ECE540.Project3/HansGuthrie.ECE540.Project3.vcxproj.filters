@@ -52,5 +52,8 @@
     <ClInclude Include="IncludedFiles\MatrixRead.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Project3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

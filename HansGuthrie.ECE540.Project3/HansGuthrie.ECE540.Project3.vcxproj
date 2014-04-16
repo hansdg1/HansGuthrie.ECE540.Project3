@@ -84,6 +84,7 @@
     <ClInclude Include="IncludedFiles\MatrixRead.h" />
     <ClInclude Include="IncludedFiles\RandomNumbers.h" />
     <ClInclude Include="IncludedFiles\Stats_Support.h" />
+    <ClInclude Include="Project3.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
