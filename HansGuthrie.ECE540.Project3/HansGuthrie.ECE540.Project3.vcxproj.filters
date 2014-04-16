@@ -32,6 +32,9 @@
     <ClCompile Include="IncludedFiles\Stats_Support.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="RegCorr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IncludedFiles\matrix.hpp">
@@ -44,6 +47,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IncludedFiles\MatrixOutputs.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IncludedFiles\MatrixRead.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
