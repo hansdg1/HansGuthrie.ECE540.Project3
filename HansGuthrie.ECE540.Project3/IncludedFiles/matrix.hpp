@@ -26,7 +26,7 @@ private:
 		matrix cofact(int r, int c);
 public:
 	    // basic constructor
-	    matrix(int N, int M); // Creates a matrix of size N by M
+	    matrix(int r, int c); // Creates a matrix of size N by M
 	    matrix(int N);        // Creates a vector of length N (actually an N,1 matrix.
 
 		// empty constructor
