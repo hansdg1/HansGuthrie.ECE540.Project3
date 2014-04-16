@@ -134,6 +134,17 @@ void MultiVariableRegression( matrix a, matrix b, matrix dependent, int size )
 	}
 }
 
+double ConfidenceInterval( matrix m )
+{
+
+	return NULL;
+}
+
+void part2( )
+{
+
+}
+
 void main( )
 {
 	part1( );
