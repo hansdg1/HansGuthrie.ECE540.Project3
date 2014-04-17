@@ -1,6 +1,3 @@
-#ifndef RandomNumbers_H_
-
-#define RandomNumbers_H_
 
 #include <math.h>
 #include <stdlib.h>
@@ -138,4 +135,28 @@ void LoadHistogramFromVector( int *Histogram,  int bins,  // Histogram
     } // End of loop through vector.
 } // End of LoadHistogramFromVector
 
-#endif  // RandomNumber_H_
+// This function will load the array BinValues, of size "bins"
+// with the center values for each bin that will be used with the 
+// load Histogram. 
+void ComputeHistogramBins(double *BinValues, int bins,  // Histogram
+	                      double Maximum, double Minimum) // Range.
+{
+	int k;
+	double Value, Step;
+
+	// Compute size of a bin.
+	Step = (Maximum - Minimum) / (double)bins;
+
+	// Start at center of first bin.
+	Value = 0.5 * Step + Minimum;
+
+	// Loop through bin values.
+	for (k = 0; k < bins; k++)
+	{
+		BinValues[k] = Value;
+		Value += Step;
+
+	} // End of loop to fill BinValues
+
+} // End of ComputeHistogramBins
+
