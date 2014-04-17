@@ -46,6 +46,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>U:\ECE540\HansGuthrie.ECE540.Project3\HansGuthrie.ECE540.Project3\IncludedFiles;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <GenerateXMLDocumentationFiles>true</GenerateXMLDocumentationFiles>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

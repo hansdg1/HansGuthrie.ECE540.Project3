@@ -74,8 +74,11 @@ void ConfidenceInterval( matrix m, int samplesize )
 	printf( "90%% Confidence of being between %lf and %lf\n\n", MeanLow, MeanHigh );
 } //end ConfidenceInterval
 
+///<summary>
 ///Computes the mean and the standard deviation of a pointer to a row array.
 ///Prints the Mean, Standard Deviation, Number of times SIMs inside CI:
+///</summary>
+///<param name = "*row">Pointer to the row's data (double array)</param>
 void IntervalMeanAndDev( double *row )
 {
 	const int binsize = 2000; //the number of subsections in the matrix
@@ -114,6 +117,10 @@ void IntervalMeanAndDev( double *row )
 	printf( "Number of times SIMs inside CI: %d\n\n", NumTimesInsideCI );
 } //end IntervalMeanAndDev
 
+///<summary>
+///Computes and outputs two CSV files (Histogram_<paramref name="rownumber"/>.csv, and HistogramPDF_ <paramref name="rownumber"/>.csv)
+///</summary>
+///<param name="rownumber">The row number to use in generating the filename</param>
 void Histogram( double *row, int size, int rownumber )
 {
 	const int numbins = 2000;
@@ -126,17 +133,39 @@ void Histogram( double *row, int size, int rownumber )
 	SearchForMaxMin( row, size, &Max, &Min );
 	LoadHistogramFromVector( Histogram, length, row, size, Max, Min );
 	ComputeHistogramBins( Bins, int( length ), Max, Min );
-	sprintf( filename, "Histogram_%05d.csv", rownumber); //copy everything into a pointer to the Name
+	sprintf( filename, "Histogram_%05d.csv", rownumber); //copy everything into a pointer to the filename, getting it ready for the WriteHistogram()
+	WriteHistogram( filename, Histogram, Bins, length ); //write out the raw data
 
 	//Convert Histogram to PDF
 	for ( int m = 0; m < length; m++ )
 	{
 		PDF[ m ] = (double)Histogram[ m ] / (double)size;
 	}
-	sprintf( filename, "HistogramPDF_%05d.csv", rownumber );
-	WritePDF( filename, PDF, Bins, length );
+	sprintf( filename, "HistogramPDF_%05d.csv", rownumber );//copy everything into a pointer to the filename, getting it ready for the WriteHistogram()
+	WritePDF( filename, PDF, Bins, length ); //write out the PDF
+} //end Histogram
 
-}
+/// Function to write a histogram to a file.
+/// Note the histogram is an array of integers, which contain the number of times
+/// the data being histogrammed fell within a bin.
+/// Also included with the counts, is a double precision number that is the
+/// center value for each bin.
+void WriteHistogram( char *name, int *Histo, double *Bins, int bins )
+{
+	// Open the file.
+	FILE *fout = fopen( name, "w" );
+	// Check for valid file open.
+	if ( fout )
+	{
+		// Loop through the data.
+		while ( bins-- )
+		{
+			fprintf( fout, "%d,%18.16lg\n", // writeout and
+				*Histo++, *Bins++ ); // move to next entries.
+		} // End of loop through bins.
+		fclose( fout );
+	} // End of valid file open test.
+} // End of WriteHistogram
 
 /// Function to write a Probablity Distribution to a file.
 /// This is similar to the histogram write about, except
@@ -247,9 +276,13 @@ int main( )
 	IntervalMeanAndDev( row3.AsPointer( ) );
 	IntervalMeanAndDev( row4.AsPointer( ) );
 
-
+	//Generate histogram CSV files (both raw data and PDF)
+	Histogram( row1.AsPointer( ), row1.high( ), 1 );
+	Histogram( row2.AsPointer( ), row2.high( ), 2 );
+	Histogram( row3.AsPointer( ), row3.high( ), 3 );
+	Histogram( row4.AsPointer( ), row4.high( ), 4 );
+	Histogram( row5.AsPointer( ), row5.high( ), 5 );
 	
-
 	getchar( );
 
 	return 0;
