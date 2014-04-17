@@ -12,8 +12,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
-
-///Computes the Multivariable regression of matrix a, matrix b, and the dependent matrix. 
+///Computes the Multivariable regression of matrix a, matrix b, and the dependent matrix.
 ///Requires input of the size of the matricies as an int
 void MultiVariableRegression( matrix a, matrix b, matrix dependent, int size )
 {
@@ -51,14 +50,12 @@ void MultiVariableRegression( matrix a, matrix b, matrix dependent, int size )
 				printf( "Correlation of Determination (CoD) = %lg\n", CoD );
 				printf( "Sqrt of CoD = %lg\n", sqrootofCoD );
 				printf( "Correlation Coefficient (CC) = %lg\n", CC );
-
 			}// end of valid x = MtrxVector check
 		} // end of valid p = MtrxVector check.
 	}
-
 } //end MultiVariableRegression
 
-///Calculates the confidence internal for the m matrix. 
+///Calculates the confidence internal for the m matrix.
 ///Requires an int representing the number of items in the sample size (for us 81)
 void ConfidenceInterval( matrix m, int samplesize )
 {
@@ -83,7 +80,7 @@ void IntervalMeanAndDev( double *row )
 {
 	const int binsize = 2000; //the number of subsections in the matrix
 	double mean[ binsize ], stdev[ binsize ]; //arrays to hold the mean and stdev for what we will compute
-	double ComputedMean,ComputedStdev, CIHigh, CILow;
+	double ComputedMean, ComputedStdev, CIHigh, CILow;
 	int NumTimesInsideCI = 0;
 
 	//loop through each bin and compute the mean & stdev for the subset
@@ -95,7 +92,7 @@ void IntervalMeanAndDev( double *row )
 	}
 	ComputedMean = ComputeMean( mean, binsize ); //cache this here so we don't have to compute it more than once
 	ComputedStdev = ComputeStdev( mean, binsize, ComputedMean );
-	
+
 	//2c
 
 	//Confidence intervals to use in checking number of times SIM is inside 90% CI range
@@ -110,7 +107,7 @@ void IntervalMeanAndDev( double *row )
 			NumTimesInsideCI++;
 		}
 	}
-	
+
 	//print the results
 	printf( "Mean of SIMs: %-lf\n", ComputedMean );
 	printf( "Stdev of SIMs: %-lf\n", ComputeStdev( mean, binsize, ComputedMean ) );
@@ -133,7 +130,7 @@ void Histogram( double *row, int size, int rownumber )
 	SearchForMaxMin( row, size, &Max, &Min );
 	LoadHistogramFromVector( Histogram, length, row, size, Max, Min );
 	ComputeHistogramBins( Bins, int( length ), Max, Min );
-	sprintf( filename, "Histogram_%05d.csv", rownumber); //copy everything into a pointer to the filename, getting it ready for the WriteHistogram()
+	sprintf( filename, "Histogram_%05d.csv", rownumber ); //copy everything into a pointer to the filename, getting it ready for the WriteHistogram()
 	WriteHistogram( filename, Histogram, Bins, length ); //write out the raw data
 
 	//Convert Histogram to PDF
@@ -188,7 +185,7 @@ void WritePDF( char *name, double *Pdf, double *Bins, int bins )
 	} // End of valid file open test.
 } // End of WriteHistogram
 
-///The main method. 
+///The main method.
 int main( )
 {
 	matrix InputMatrix; //the main matrix that we're reading in
@@ -227,7 +224,7 @@ int main( )
 	FaultTol3 = FaultTolerantRegression( row3, row5 );
 	FaultTol4 = FaultTolerantRegression( row4, row5 );
 
-	//Compute Correlation Coeffcient 
+	//Compute Correlation Coeffcient
 	CorrelCoeff1 = CorrelationCoefficient( row1, row5 );
 	CorrelCoeff2 = CorrelationCoefficient( row2, row5 );
 	CorrelCoeff3 = CorrelationCoefficient( row3, row5 );
@@ -256,7 +253,6 @@ int main( )
 	//Row 3 and Row 4 have the highest CC, so perform a multivariable regression on them
 	MultiVariableRegression( row3, row4, row5, numcols );
 
-
 	//2a)
 	printf( "\n" );
 	int samplesize = 81;
@@ -282,7 +278,7 @@ int main( )
 	Histogram( row3.AsPointer( ), row3.high( ), 3 );
 	Histogram( row4.AsPointer( ), row4.high( ), 4 );
 	Histogram( row5.AsPointer( ), row5.high( ), 5 );
-	
+
 	getchar( );
 
 	return 0;
