@@ -5,7 +5,6 @@
 #ifdef _MSC_VER
 #define _CRT_SECURE_NO_WARNINGS
 #endif
-
 //Even though this a header file, we will code these functions here 
 //since we want to use them in future projects
 

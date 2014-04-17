@@ -12,15 +12,17 @@
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
+///<Summary>
 ///Computes the Multivariable regression of matrix a, matrix b, and the dependent matrix.
 ///Requires input of the size of the matricies as an int
+///</Summary>
 void MultiVariableRegression( matrix a, matrix b, matrix dependent, int size )
 {
 	matrix In = matrix( size, 3 );
 
 	matrix PIn;
 	matrix p, x;
-	double CoD, sqrootofCoD, CC, temp;
+	double CoD, sqrootofCoD, CC;
 
 	//create matrix In from Row 3, Row 4, and a lot of 1's.
 	for ( int k = 0; k < size; k++ )
@@ -55,8 +57,12 @@ void MultiVariableRegression( matrix a, matrix b, matrix dependent, int size )
 	}
 } //end MultiVariableRegression
 
+///<Summary>
 ///Calculates the confidence internal for the m matrix.
 ///Requires an int representing the number of items in the sample size (for us 81)
+///</Summary>
+///<param name="m">The matrix</param>
+///<param name="samplesize">Num items in bin</param>
 void ConfidenceInterval( matrix m, int samplesize )
 {
 	double Mean, Stdev, MeanLow, MeanHigh;
@@ -120,33 +126,45 @@ void IntervalMeanAndDev( double *row )
 ///<param name="rownumber">The row number to use in generating the filename</param>
 void Histogram( double *row, int size, int rownumber )
 {
-	const int numbins = 2000;
-	const int length = (int)sqrt( size );
-	char filename[ 64 ];
-	int Histogram[ numbins ];
-	double Bins[ numbins ], PDF[ numbins ];
+	const int NUMBINS = 2000;
+	const int LENGTH = (int)sqrt( size );
+	char Filename[ 64 ];
+	int Histogram[ NUMBINS ];
+	double Bins[ NUMBINS ], PDF[ NUMBINS ];
 	double Max, Min; //the max and min of the array
+	double ASE = 0;
 
 	SearchForMaxMin( row, size, &Max, &Min );
-	LoadHistogramFromVector( Histogram, length, row, size, Max, Min );
-	ComputeHistogramBins( Bins, int( length ), Max, Min );
-	sprintf( filename, "Histogram_%05d.csv", rownumber ); //copy everything into a pointer to the filename, getting it ready for the WriteHistogram()
-	WriteHistogram( filename, Histogram, Bins, length ); //write out the raw data
+	LoadHistogramFromVector( Histogram, LENGTH, row, size, Max, Min );
+	ComputeHistogramBins( Bins, int( LENGTH ), Max, Min );
+	sprintf( Filename, "Histogram_%05d.csv", rownumber ); //copy everything into a pointer to the filename, getting it ready for the WriteHistogram()
+	WriteHistogram( Filename, Histogram, Bins, LENGTH ); //write out the raw data
 
 	//Convert Histogram to PDF
-	for ( int m = 0; m < length; m++ )
+	for ( int m = 0; m < LENGTH; m++ )
 	{
 		PDF[ m ] = (double)Histogram[ m ] / (double)size;
 	}
-	sprintf( filename, "HistogramPDF_%05d.csv", rownumber );//copy everything into a pointer to the filename, getting it ready for the WriteHistogram()
-	WritePDF( filename, PDF, Bins, length ); //write out the PDF
+	sprintf( Filename, "HistogramPDF_%05d.csv", rownumber );//copy everything into a pointer to the filename, getting it ready for the WriteHistogram()
+	WritePDF( Filename, PDF, Bins, LENGTH ); //write out the PDF
+
+	//Gauss PDF
+
+
+	//ASE
+	/*for ( int i = 0; i < NUMBINS; i++ )
+	{
+		sum=
+	}*/
 } //end Histogram
 
+///<Summary>
 /// Function to write a histogram to a file.
 /// Note the histogram is an array of integers, which contain the number of times
 /// the data being histogrammed fell within a bin.
 /// Also included with the counts, is a double precision number that is the
 /// center value for each bin.
+///</Summary>
 void WriteHistogram( char *name, int *Histo, double *Bins, int bins )
 {
 	// Open the file.
@@ -164,9 +182,10 @@ void WriteHistogram( char *name, int *Histo, double *Bins, int bins )
 	} // End of valid file open test.
 } // End of WriteHistogram
 
-/// Function to write a Probablity Distribution to a file.
+/// <summary>Function to write a Probablity Distribution to a file.
 /// This is similar to the histogram write about, except
 /// instead of the integer counts, a double precision probablity is given.
+/// </summary>
 void WritePDF( char *name, double *Pdf, double *Bins, int bins )
 {
 	// Open the file.
@@ -185,7 +204,7 @@ void WritePDF( char *name, double *Pdf, double *Bins, int bins )
 	} // End of valid file open test.
 } // End of WriteHistogram
 
-///The main method.
+///<summary>The main method.</summary>
 int main( )
 {
 	matrix InputMatrix; //the main matrix that we're reading in
@@ -207,8 +226,7 @@ int main( )
 	row4 = matrix( numcols, 1 );
 	row5 = matrix( numcols, 1 );
 
-	//matrix is created in this format (rows, cols)
-	//(row1 = InputMatrix row 0)
+	//matrix is created in this format (rows, cols). Don't forget row1 is InputMatrix row0
 	for ( int i = 0; i < numcols; i++ )
 	{
 		row1( i ) = InputMatrix( 0, i );
@@ -255,7 +273,7 @@ int main( )
 
 	//2a)
 	printf( "\n" );
-	int samplesize = 81;
+	const int samplesize = 81;
 	printf( "Row 1 stats:\n" );
 	ConfidenceInterval( row1, samplesize );
 	printf( "Row 2 stats:\n" );
