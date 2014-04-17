@@ -114,6 +114,51 @@ void IntervalMeanAndDev( double *row )
 	printf( "Number of times SIMs inside CI: %d\n\n", NumTimesInsideCI );
 } //end IntervalMeanAndDev
 
+void Histogram( double *row, int size, int rownumber )
+{
+	const int numbins = 2000;
+	const int length = (int)sqrt( size );
+	char filename[ 64 ];
+	int Histogram[ numbins ];
+	double Bins[ numbins ], PDF[ numbins ];
+	double Max, Min; //the max and min of the array
+
+	SearchForMaxMin( row, size, &Max, &Min );
+	LoadHistogramFromVector( Histogram, length, row, size, Max, Min );
+	ComputeHistogramBins( Bins, int( length ), Max, Min );
+	sprintf( filename, "Histogram_%05d.csv", rownumber); //copy everything into a pointer to the Name
+
+	//Convert Histogram to PDF
+	for ( int m = 0; m < length; m++ )
+	{
+		PDF[ m ] = (double)Histogram[ m ] / (double)size;
+	}
+	sprintf( filename, "HistogramPDF_%05d.csv", rownumber );
+	WritePDF( filename, PDF, Bins, length );
+
+}
+
+/// Function to write a Probablity Distribution to a file.
+/// This is similar to the histogram write about, except
+/// instead of the integer counts, a double precision probablity is given.
+void WritePDF( char *name, double *Pdf, double *Bins, int bins )
+{
+	// Open the file.
+	FILE *fout = fopen( name, "w" );
+	// Check for valid file open.
+	if ( fout )
+	{
+		// Loop through the data.
+		while ( bins-- )
+		{
+			fprintf( fout, "%18.16lg,%18.16lg\n", // writeout and
+				*Pdf, *Bins ); // move to next entries.
+			Pdf++; Bins++;
+		} // End of loop through bins.
+		fclose( fout );
+	} // End of valid file open test.
+} // End of WriteHistogram
+
 ///The main method. 
 int main( )
 {
@@ -202,6 +247,8 @@ int main( )
 	IntervalMeanAndDev( row3.AsPointer( ) );
 	IntervalMeanAndDev( row4.AsPointer( ) );
 
+
+	
 
 	getchar( );
 
