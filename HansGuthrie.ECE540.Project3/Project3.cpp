@@ -55,7 +55,7 @@ void MultiVariableRegression( matrix a, matrix b, matrix dependent, int size )
 		} // end of valid p = MtrxVector check.
 	}
 
-}
+} //end MultiVariableRegression
 
 ///Calculates the confidence internal for the m matrix. 
 ///Requires an int representing the number of items in the sample size (for us 81)
@@ -71,16 +71,17 @@ void ConfidenceInterval( matrix m, int samplesize )
 
 	printf( "Mean: %lf\nStdev: %lf\n", Mean, Stdev );
 	printf( "90%% Confidence of being between %lf and %lf\n\n", MeanLow, MeanHigh );
-}
+} //end ConfidenceInterval
 
 ///Computes the mean and the standard deviation of a pointer to a row array.
 ///Prints the Mean, Standard Deviation, Number of times SIMs inside CI:
 void IntervalMeanAndDev( double *row )
 {
 	const int binsize = 2000; //the number of subsections in the matrix
-	double mean[ binsize ], stdev[ binsize ];
+	double mean[ binsize ], stdev[ binsize ]; //arrays to hold the mean and stdev for what we will compute
 	double ComputedMean,ComputedStdev, CIHigh, CILow;
 	int NumTimesInsideCI = 0;
+
 	//loop through each bin and compute the mean & stdev for the subset
 	for ( int i = 0; i < binsize; i++ )
 	{
@@ -91,6 +92,8 @@ void IntervalMeanAndDev( double *row )
 	ComputedMean = ComputeMean( mean, binsize ); //cache this here so we don't have to compute it more than once
 	ComputedStdev = ComputeStdev( mean, binsize, ComputedMean );
 	
+	//2c
+
 	//Confidence intervals to use in checking number of times SIM is inside 90% CI range
 	CILow = ComputedMean - ( 1.64*sqrt( 81 * pow( ComputedStdev, 2 ) ) ) / 9;
 	CIHigh = ComputedMean + ( 1.64*sqrt( 81 * pow( ComputedStdev, 2 ) ) ) / 9;
@@ -104,11 +107,11 @@ void IntervalMeanAndDev( double *row )
 		}
 	}
 	
+	//print the results
 	printf( "Mean of SIMs: %-lf\n", ComputedMean );
 	printf( "Stdev of SIMs: %-lf\n", ComputeStdev( mean, binsize, ComputedMean ) );
 	printf( "Number of times SIMs inside CI: %d\n\n", NumTimesInsideCI );
-	
-}
+} //end IntervalMeanAndDev
 
 ///The main method. 
 int main( )
@@ -137,21 +140,9 @@ int main( )
 	for ( int i = 0; i < numcols; i++ )
 	{
 		row1( i ) = InputMatrix( 0, i );
-	}
-	for ( int i = 0; i < numcols; i++ )
-	{
 		row2( i ) = InputMatrix( 1, i );
-	}
-	for ( int i = 0; i < numcols; i++ )
-	{
 		row3( i ) = InputMatrix( 2, i );
-	}
-	for ( int i = 0; i < numcols; i++ )
-	{
 		row4( i ) = InputMatrix( 3, i );
-	}
-	for ( int i = 0; i < numcols; i++ )
-	{
 		row5( i ) = InputMatrix( 4, i );
 	}
 
