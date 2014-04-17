@@ -4,6 +4,7 @@
 #include "Stats_Support.h"
 #include "MatrixOutputs.hpp"
 #include <vector>
+#include <math.h>
 #include "Project3.h"
 
 #ifdef _MSC_VER
@@ -53,11 +54,13 @@ void MultiVariableRegression( matrix a, matrix b, matrix dependent, int size )
 			}// end of valid x = MtrxVector check
 		} // end of valid p = MtrxVector check.
 	}
+
 }
 
+///Calculates the confidence internal for the m matrix. 
+///Requires an int representing the number of items in the sample size (for us 81)
 void ConfidenceInterval( matrix m, int samplesize )
 {
-	//mean, variance
 	double Mean, Stdev, MeanLow, MeanHigh;
 	int Length = m.high( );
 
@@ -70,7 +73,44 @@ void ConfidenceInterval( matrix m, int samplesize )
 	printf( "90%% Confidence of being between %lf and %lf\n\n", MeanLow, MeanHigh );
 }
 
+///Computes the mean and the standard deviation of a pointer to a row array.
+///Prints the Mean, Standard Deviation, Number of times SIMs inside CI:
+void IntervalMeanAndDev( double *row )
+{
+	const int binsize = 2000; //the number of subsections in the matrix
+	double mean[ binsize ], stdev[ binsize ];
+	double ComputedMean,ComputedStdev, CIHigh, CILow;
+	int NumTimesInsideCI = 0;
+	//loop through each bin and compute the mean & stdev for the subset
+	for ( int i = 0; i < binsize; i++ )
+	{
+		mean[ i ] = ComputeMean( row, 162000 / binsize );
+		stdev[ i ] = ComputeStdev( row, 162000 / binsize, mean[ i ] );
+		row += 81; //increment to the next set of 81
+	}
+	ComputedMean = ComputeMean( mean, binsize ); //cache this here so we don't have to compute it more than once
+	ComputedStdev = ComputeStdev( mean, binsize, ComputedMean );
+	
+	//Confidence intervals to use in checking number of times SIM is inside 90% CI range
+	CILow = ComputedMean - ( 1.64*sqrt( 81 * pow( ComputedStdev, 2 ) ) ) / 9;
+	CIHigh = ComputedMean + ( 1.64*sqrt( 81 * pow( ComputedStdev, 2 ) ) ) / 9;
 
+	//Dumb code that computes the number of times the SIM falls in the 90% CI range
+	for ( int i = 0; i < binsize; i++ )
+	{
+		if ( ( mean[ i ]> CILow ) && ( mean[ i ] < CIHigh ) )
+		{
+			NumTimesInsideCI++;
+		}
+	}
+	
+	printf( "Mean of SIMs: %-lf\n", ComputedMean );
+	printf( "Stdev of SIMs: %-lf\n", ComputeStdev( mean, binsize, ComputedMean ) );
+	printf( "Number of times SIMs inside CI: %d\n\n", NumTimesInsideCI );
+	
+}
+
+///The main method. 
 int main( )
 {
 	matrix InputMatrix; //the main matrix that we're reading in
@@ -85,6 +125,7 @@ int main( )
 	int numrows = InputMatrix.high( );
 	int numcols = InputMatrix.wide( );
 
+	//Allocate the space for the rows
 	row1 = matrix( numcols, 1 );
 	row2 = matrix( numcols, 1 );
 	row3 = matrix( numcols, 1 );
@@ -162,7 +203,13 @@ int main( )
 	printf( "Row 4 stats:\n" );
 	ConfidenceInterval( row4, samplesize );
 
-	
+	//2b)
+
+	IntervalMeanAndDev( row1.AsPointer( ) );
+	IntervalMeanAndDev( row2.AsPointer( ) );
+	IntervalMeanAndDev( row3.AsPointer( ) );
+	IntervalMeanAndDev( row4.AsPointer( ) );
+
 
 	getchar( );
 

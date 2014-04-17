@@ -1,9 +1,7 @@
-void part1( );
-
-void part2( );
-
 void MultiVariableRegression( matrix a, matrix b, matrix dependent, int size );
 
-double ConfidenceInterval( matrix m );
+void ConfidenceInterval( matrix m );
 
-void main( );
+void IntervalMeanAndDev( matrix *row );
+
+int main( );
