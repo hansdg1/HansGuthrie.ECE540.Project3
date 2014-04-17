@@ -26,4 +26,7 @@ void LoadHistogramFromVector(int *Histogram, int bins,  // Histogram
                              double *random, int length, // Vector of data
                              double Maximum, double Minimum); // Range.
 
+void ComputeHistogramBins( double *BinValues, int bins,  // Histogram
+	double Maximum, double Minimum ); // Range.
+
 #endif  // RandomNumber_H_

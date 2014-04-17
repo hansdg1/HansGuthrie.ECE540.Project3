@@ -76,7 +76,6 @@
     <ClCompile Include="IncludedFiles\RandomNumbers.cpp" />
     <ClCompile Include="IncludedFiles\Stats_Support.cpp" />
     <ClCompile Include="Project3.cpp" />
-    <ClCompile Include="RegCorr.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IncludedFiles\matrix.hpp" />

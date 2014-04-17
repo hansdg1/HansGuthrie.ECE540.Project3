@@ -1,4 +1,4 @@
-
+#include "Stats_Support.h"
 #include "Matrix.hpp"
 
 // Regression analysis using two-pass Approach, return coefficient in vector p.
