@@ -41,6 +41,7 @@ void MultiVariableRegression( matrix a, matrix b, matrix dependent, int size )
 		if ( p.isValid( ) )
 		{
 			//prints p
+			printf( "Parameters" );
 			PrintMatrix( p );
 
 			x = In * p; //x matrix is the product of In and p
@@ -262,25 +263,29 @@ int main( )
 
 	//Print what we have computed
 
-	printf( "Linear Regression parameters\n" );
+	printf( "Linear Regression (LR) Parameters & Correlation Coefficient (CC): \n" );
+	printf( "LR: Row 1" );
 	PrintMatrix( FaultTol1 );
-	printf( "\n" );
-	PrintMatrix( FaultTol2 );
-	printf( "\n" );
-	PrintMatrix( FaultTol3 );
-	printf( "\n" );
-	PrintMatrix( FaultTol4 );
-	printf( "\n" );
+	printf( "CC Row Row 1 & 5: %lg \n\n\n", CorrelCoeff1 );
 
-	printf( "Correlation Coefficients\n" );
-	printf( "CC1: %lg \n", CorrelCoeff1 );
-	printf( "CC2: %lg \n", CorrelCoeff2 );
-	printf( "CC3: %lg \n", CorrelCoeff3 );
-	printf( "CC4: %lg \n", CorrelCoeff4 );
+	printf( "LR: Row 2" );
+	PrintMatrix( FaultTol2 );
+	printf( "CC Row Row 2 & 5: %lg \n\n\n", CorrelCoeff2 );
+
+	printf( "LR: Row 3" );
+	PrintMatrix( FaultTol3 );
+	printf( "CC Row Row 3 & 5: %lg \n\n\n", CorrelCoeff3 );
+
+	printf( "LR: Row 4" );
+	PrintMatrix( FaultTol4 );
+	printf( "CC Row Row 4 & 5: %lg \n\n\n", CorrelCoeff4 );
+
+	//printf( "Correlation Coefficients\n" );
 
 	//1b)
 
 	//Row 3 and Row 4 have the highest CC, so perform a multivariable regression on them
+	printf( "Multivariable Regression:\n" );
 	MultiVariableRegression( row3, row4, row5, NUMCOLS );
 
 	//2a)
@@ -297,15 +302,20 @@ int main( )
 	ConfidenceInterval( row5, SAMPLESIZE );
 
 	//2b - d)
-
+	printf( "SIMs:\n" );
+	printf( "Row 1:\n" );
 	IntervalMeanAndDev( row1.AsPointer( ) );
 	Histogram( row1.AsPointer( ), NUMCOLS, 1 );
+	printf( "Row 2:\n" );
 	IntervalMeanAndDev( row2.AsPointer( ) );
 	Histogram( row2.AsPointer( ), NUMCOLS, 2 );
+	printf( "Row 3:\n" );
 	IntervalMeanAndDev( row3.AsPointer( ) );
 	Histogram( row3.AsPointer( ), NUMCOLS, 3 );
+	printf( "Row 4:\n" );
 	IntervalMeanAndDev( row4.AsPointer( ) );
 	Histogram( row4.AsPointer( ), NUMCOLS, 4 );
+	printf( "Row 5:\n" );
 	IntervalMeanAndDev( row5.AsPointer( ) );
 	Histogram( row5.AsPointer( ), NUMCOLS, 5 );
 
