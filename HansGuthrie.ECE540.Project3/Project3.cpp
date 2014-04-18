@@ -117,7 +117,7 @@ void IntervalMeanAndDev( double *row )
 	//print the results
 	printf( "Mean of SIMs: %-lf\n", ComputedMean );
 	printf( "Stdev of SIMs: %-lf\n", ComputeStdev( mean, binsize, ComputedMean ) );
-	printf( "Number of times SIMs inside CI: %d\n\n", NumTimesInsideCI );
+	printf( "Number of times SIMs inside CI: %d\n", NumTimesInsideCI );
 } //end IntervalMeanAndDev
 
 ///<summary>
@@ -128,16 +128,19 @@ void Histogram( double *row, int size, int rownumber )
 {
 	const int NUMBINS = 2000;
 	const int LENGTH = (int)sqrt( size );
+	const double PI = 4.0 * atan( 1.0 );
 	char Filename[ 64 ];
 	int Histogram[ NUMBINS ];
-	double Bins[ NUMBINS ], PDF[ NUMBINS ];
+	double Bins[ NUMBINS ], PDF[ NUMBINS ], GaussPDF[NUMBINS];
 	double Max, Min; //the max and min of the array
-	double ASE = 0;
+	double scale; //for the gauss stuff
+	double computedMean, computedStdev;
+	double ASD = 0, sum = 0;
 
 	SearchForMaxMin( row, size, &Max, &Min );
 	LoadHistogramFromVector( Histogram, LENGTH, row, size, Max, Min );
 	ComputeHistogramBins( Bins, int( LENGTH ), Max, Min );
-	sprintf( Filename, "Histogram_%05d.csv", rownumber ); //copy everything into a pointer to the filename, getting it ready for the WriteHistogram()
+	sprintf( Filename, "Histogram_%d.csv", rownumber ); //copy everything into a pointer to the filename, getting it ready for the WriteHistogram()
 	WriteHistogram( Filename, Histogram, Bins, LENGTH ); //write out the raw data
 
 	//Convert Histogram to PDF
@@ -145,17 +148,27 @@ void Histogram( double *row, int size, int rownumber )
 	{
 		PDF[ m ] = (double)Histogram[ m ] / (double)size;
 	}
-	sprintf( Filename, "HistogramPDF_%05d.csv", rownumber );//copy everything into a pointer to the filename, getting it ready for the WriteHistogram()
+	sprintf( Filename, "HistogramPDF_%d.csv", rownumber );//copy everything into a pointer to the filename, getting it ready for the WriteHistogram()
 	WritePDF( Filename, PDF, Bins, LENGTH ); //write out the PDF
 
 	//Gauss PDF
-
-
-	//ASE
-	/*for ( int i = 0; i < NUMBINS; i++ )
+	computedMean = ComputeMean( row, size ); //precompute stdev for efficiency
+	computedStdev = ComputeStdev( row, size, computedMean ); 
+	double Scale = ( Bins[ 1 ] - Bins[ 0 ] ) / ( sqrt( 2 * PI ) * computedStdev );
+	for ( int m = 0; m < LENGTH; m++ )
 	{
-		sum=
-	}*/
+		GaussPDF[ m ] = Scale * exp( -( Bins[ m ] - computedMean ) *( Bins[ m ] - computedMean ) / ( 2.0*pow( computedStdev, 2 ) ) );
+	}
+	sprintf( Filename, "PDF%d.csv", rownumber );
+	WritePDF( Filename, GaussPDF, Bins, LENGTH );
+
+
+	//ASD
+	for ( int i = 0; i < NUMBINS; i++ )
+	{
+		sum += fabs( GaussPDF[ i ] - PDF[ i ] );
+	}
+	printf( "ASD is %lf\n\n",sum );
 } //end Histogram
 
 ///<Summary>
@@ -282,20 +295,23 @@ int main( )
 	ConfidenceInterval( row3, samplesize );
 	printf( "Row 4 stats:\n" );
 	ConfidenceInterval( row4, samplesize );
+	printf( "Row 5 stats:\n" );
+	ConfidenceInterval( row5, samplesize );
 
 	//2b)
 
 	IntervalMeanAndDev( row1.AsPointer( ) );
+	Histogram( row1.AsPointer( ), row1.high( ), 1 );
 	IntervalMeanAndDev( row2.AsPointer( ) );
+	Histogram( row2.AsPointer( ), row2.high( ), 2 );
 	IntervalMeanAndDev( row3.AsPointer( ) );
+	Histogram( row3.AsPointer( ), row3.high( ), 3 );
 	IntervalMeanAndDev( row4.AsPointer( ) );
+	Histogram( row4.AsPointer( ), row4.high( ), 4 );
+	IntervalMeanAndDev( row5.AsPointer( ) );
+	Histogram( row5.AsPointer( ), row5.high( ), 5 );
 
 	//Generate histogram CSV files (both raw data and PDF)
-	Histogram( row1.AsPointer( ), row1.high( ), 1 );
-	Histogram( row2.AsPointer( ), row2.high( ), 2 );
-	Histogram( row3.AsPointer( ), row3.high( ), 3 );
-	Histogram( row4.AsPointer( ), row4.high( ), 4 );
-	Histogram( row5.AsPointer( ), row5.high( ), 5 );
 
 	getchar( );
 
