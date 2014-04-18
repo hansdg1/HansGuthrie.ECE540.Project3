@@ -32,7 +32,7 @@ void MultiVariableRegression( matrix a, matrix b, matrix dependent, int size )
 		In( k, 2 ) = 1.0; //set all of last column to 1's
 	}
 
-	PIn = MatrixPseudoInverse( In );
+	PIn = MatrixPseudoInverse( In ); //calculate the Pseudoinverse
 	if ( PIn.isValid( ) )
 	{
 		// compute the pseudo inverse and check for valid operation.
@@ -131,7 +131,7 @@ void Histogram( double *row, int size, int rownumber )
 	const double PI = 4.0 * atan( 1.0 );
 	char Filename[ 64 ];
 	int Histogram[ NUMBINS ];
-	double Bins[ NUMBINS ], PDF[ NUMBINS ], GaussPDF[NUMBINS];
+	double Bins[ NUMBINS ], PDF[ NUMBINS ], GaussPDF[ NUMBINS ];
 	double Max, Min; //the max and min of the array
 	double scale; //for the gauss stuff
 	double computedMean, computedStdev;
@@ -140,7 +140,7 @@ void Histogram( double *row, int size, int rownumber )
 	SearchForMaxMin( row, size, &Max, &Min );
 	LoadHistogramFromVector( Histogram, LENGTH, row, size, Max, Min );
 	ComputeHistogramBins( Bins, int( LENGTH ), Max, Min );
-	sprintf( Filename, "Histogram_%d.csv", rownumber ); //copy everything into a pointer to the filename, getting it ready for the WriteHistogram()
+	sprintf( Filename, "Histogram%d.csv", rownumber ); //copy everything into a pointer to the filename, getting it ready for the WriteHistogram()
 	WriteHistogram( Filename, Histogram, Bins, LENGTH ); //write out the raw data
 
 	//Convert Histogram to PDF
@@ -148,12 +148,12 @@ void Histogram( double *row, int size, int rownumber )
 	{
 		PDF[ m ] = (double)Histogram[ m ] / (double)size;
 	}
-	sprintf( Filename, "HistogramPDF_%d.csv", rownumber );//copy everything into a pointer to the filename, getting it ready for the WriteHistogram()
+	sprintf( Filename, "HistogramPDF%d.csv", rownumber );//copy everything into a pointer to the filename, getting it ready for the WriteHistogram()
 	WritePDF( Filename, PDF, Bins, LENGTH ); //write out the PDF
 
 	//Gauss PDF
 	computedMean = ComputeMean( row, size ); //precompute stdev for efficiency
-	computedStdev = ComputeStdev( row, size, computedMean ); 
+	computedStdev = ComputeStdev( row, size, computedMean );
 	double Scale = ( Bins[ 1 ] - Bins[ 0 ] ) / ( sqrt( 2 * PI ) * computedStdev );
 	for ( int m = 0; m < LENGTH; m++ )
 	{
@@ -162,13 +162,12 @@ void Histogram( double *row, int size, int rownumber )
 	sprintf( Filename, "PDF%d.csv", rownumber );
 	WritePDF( Filename, GaussPDF, Bins, LENGTH );
 
-
 	//ASD
 	for ( int i = 0; i < NUMBINS; i++ )
 	{
 		sum += fabs( GaussPDF[ i ] - PDF[ i ] );
 	}
-	printf( "ASD is %lf\n\n",sum );
+	printf( "ASD is %lf\n\n", sum );
 } //end Histogram
 
 ///<Summary>
@@ -229,18 +228,18 @@ int main( )
 
 	InputMatrix = ReadBinaryMatrix( "StatsData.mtx" ); //read in the matrix from file
 	//calculate the boundaries for the matricies so we don't have to calculate it multiple times
-	int numrows = InputMatrix.high( );
-	int numcols = InputMatrix.wide( );
+	const int NUMCOLS = InputMatrix.wide( );
+	const int SAMPLESIZE = 81; //SampleSize for Confidence Interval
 
 	//Allocate the space for the rows
-	row1 = matrix( numcols, 1 );
-	row2 = matrix( numcols, 1 );
-	row3 = matrix( numcols, 1 );
-	row4 = matrix( numcols, 1 );
-	row5 = matrix( numcols, 1 );
+	row1 = matrix( NUMCOLS, 1 );
+	row2 = matrix( NUMCOLS, 1 );
+	row3 = matrix( NUMCOLS, 1 );
+	row4 = matrix( NUMCOLS, 1 );
+	row5 = matrix( NUMCOLS, 1 );
 
 	//matrix is created in this format (rows, cols). Don't forget row1 is InputMatrix row0
-	for ( int i = 0; i < numcols; i++ )
+	for ( int i = 0; i < NUMCOLS; i++ )
 	{
 		row1( i ) = InputMatrix( 0, i );
 		row2( i ) = InputMatrix( 1, i );
@@ -282,34 +281,33 @@ int main( )
 	//1b)
 
 	//Row 3 and Row 4 have the highest CC, so perform a multivariable regression on them
-	MultiVariableRegression( row3, row4, row5, numcols );
+	MultiVariableRegression( row3, row4, row5, NUMCOLS );
 
 	//2a)
 	printf( "\n" );
-	const int samplesize = 81;
 	printf( "Row 1 stats:\n" );
-	ConfidenceInterval( row1, samplesize );
+	ConfidenceInterval( row1, SAMPLESIZE );
 	printf( "Row 2 stats:\n" );
-	ConfidenceInterval( row2, samplesize );
+	ConfidenceInterval( row2, SAMPLESIZE );
 	printf( "Row 3 stats:\n" );
-	ConfidenceInterval( row3, samplesize );
+	ConfidenceInterval( row3, SAMPLESIZE );
 	printf( "Row 4 stats:\n" );
-	ConfidenceInterval( row4, samplesize );
+	ConfidenceInterval( row4, SAMPLESIZE );
 	printf( "Row 5 stats:\n" );
-	ConfidenceInterval( row5, samplesize );
+	ConfidenceInterval( row5, SAMPLESIZE );
 
-	//2b)
+	//2b - d)
 
 	IntervalMeanAndDev( row1.AsPointer( ) );
-	Histogram( row1.AsPointer( ), row1.high( ), 1 );
+	Histogram( row1.AsPointer( ), NUMCOLS, 1 );
 	IntervalMeanAndDev( row2.AsPointer( ) );
-	Histogram( row2.AsPointer( ), row2.high( ), 2 );
+	Histogram( row2.AsPointer( ), NUMCOLS, 2 );
 	IntervalMeanAndDev( row3.AsPointer( ) );
-	Histogram( row3.AsPointer( ), row3.high( ), 3 );
+	Histogram( row3.AsPointer( ), NUMCOLS, 3 );
 	IntervalMeanAndDev( row4.AsPointer( ) );
-	Histogram( row4.AsPointer( ), row4.high( ), 4 );
+	Histogram( row4.AsPointer( ), NUMCOLS, 4 );
 	IntervalMeanAndDev( row5.AsPointer( ) );
-	Histogram( row5.AsPointer( ), row5.high( ), 5 );
+	Histogram( row5.AsPointer( ), NUMCOLS, 5 );
 
 	//Generate histogram CSV files (both raw data and PDF)
 
