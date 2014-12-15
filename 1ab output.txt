@@ -1,0 +1,31 @@
+Linear Regression (LR) Parameters && Correlation Coefficient (CC)
+LR: Row 1
+ Columns 1 to 1
+|     0.079395,  |
+|    -0.516183,  |
+
+CC Row 1 & 5: 0.290579
+
+
+LR: Row 2
+ Columns 1 to 1
+|    -0.081241,  |
+|    -0.222331,  |
+
+CC Row 2 & 5: -0.133197
+
+
+LR: Row 3
+ Columns 1 to 1
+|     0.050018,  |
+|    -0.411259,  |
+
+CC Row 3 & 5: 0.758055
+
+
+LR: Row 4
+ Columns 1 to 1
+|    -1.255861,  |
+|     0.366336,  |
+
+CC Row 4 & 5: -0.548706
